@@ -1,0 +1,78 @@
+#!/usr/bin/env node
+var cluster = require("cluster")
+var path = require("path")
+var Worker = require("../worker")
+
+var getNoop = function () {
+  console.log("[Worker %s] Using demonstration function", process.pid)
+  return function (msg) {
+    console.log("[Worker %s] Processing:", process.pid, msg)
+  }
+}
+
+var getLevel = function (n) {
+  if (n > 1) return "debug"
+  else if (n > 0) return "info"
+  else return "warn"
+}
+
+if (cluster.isMaster) {
+  var argv = require("yargs")
+    .usage("Usage: $0 [options]")
+    .example("$0 -q <url>")
+    .example("AWS_SQS_URL=<url> $0")
+
+    .option("q", {
+      alias: "queue",
+      default: process.env.AWS_SQS_URL,
+      describe: "SQS Queue url (reads env AWS_SQS_URL)",
+      type: "string"
+    })
+
+    .option("s", {
+      alias: "server",
+      default: process.env.SERVER_URL || "http://localhost:3000",
+      describe: "Server url (reads env SERVER_URL)",
+      type: "string"
+    })
+
+    .option("f", {
+      alias: "function",
+      describe: "Path to script that exposes worker function",
+      type: "string"
+    })
+
+    .option("c", {
+      alias: "count",
+      describe: "Number of workers to spawn (defaults to CPU count)",
+      default: require("os").cpus().length,
+      type: "number"
+    })
+
+    .count("verbose")
+    .alias("v", "verbose")
+
+    .help("h")
+    .alias("h", "help")
+    .argv
+
+  if (!argv.q) {
+    console.error("Mising required argument: q")
+    process.exit()
+  }
+
+  for (var i = 0; i < argv.c; i++) {
+    cluster.fork(argv)
+  }
+} else {
+  var opts = {queueUrl: process.env.q, serverUrl: process.env.s, logLevel: getLevel(process.env.verbose)}
+  var worker
+  if (process.env.f == "undefined") {
+    worker = new Worker(getNoop(), opts)
+  } else {
+    var workerFunc = require(path.join(process.cwd(), process.env.f))
+    worker = workerFunc(opts)
+  }
+  worker.listen()
+  console.log("[Worker %s] Ready to consume (from %s)", process.pid, worker.url)
+}
