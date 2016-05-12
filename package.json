@@ -1,0 +1,39 @@
+{
+  "name": "cancelable-sqs-queue",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Jon Lauridsen <mail@jonlauridsen.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "istanbul --include-all-sources cover _mocha --dir .coverage -- -R spec",
+    "server": "bin/server",
+    "worker": "bin/worker"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.3.9",
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "hal": "^0.1.0",
+    "jsonapi-serializer": "^3.1.0",
+    "loglevel": "^1.4.0",
+    "lowdb": "^0.12.5",
+    "node-custom-errors": "^0.1.6",
+    "q": "^1.4.1",
+    "request-promise": "^3.0.0",
+    "restify": "^4.0.4",
+    "sqs-consumer": "^3.1.2",
+    "yargs": "^4.7.0",
+    "lodash": "^4.12.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.3",
+    "mocha": "^2.4.5",
+    "mocha-istanbul": "^0.2.0",
+    "nock": "^8.0.0",
+    "rewire": "^2.5.1",
+    "sinon": "^1.17.4",
+    "supertest": "^1.2.0"
+  }
+}
