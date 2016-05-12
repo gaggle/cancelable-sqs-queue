@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+var Server = require("../server")
+var argv = require("yargs")
+  .usage("Usage: $0 [options]")
+  .example("$0 -q <url> -p 3050")
+  .example("AWS_SQS_URL=<url> $0 -p 3050")
+
+  .option("q", {
+    alias: "queue",
+    default: process.env.AWS_SQS_URL,
+    describe: "SQS Queue url (defaults to env AWS_SQS_URL)",
+    type: "string"
+  })
+
+  .option("p", {
+    alias: "port",
+    default: 3000,
+    describe: "Port",
+    type: "number"
+  })
+
+  .count("verbose")
+  .alias("v", "verbose")
+
+  .help("h")
+  .alias("h", "help")
+  .argv
+
+if (!argv.q) {
+  console.error("Mising required argument: q")
+  process.exit()
+}
+
+var getLevel = function (n) {
+  if (n > 1) return "debug"
+  else if (n > 0) return "info"
+  else return "warn"
+}
+
+var app = new Server({queueUrl: argv.q, logLevel: getLevel(argv.verbose)})
+app.listen(argv.p, function () {
+  console.log("[Server] Listening at %s", app.url)
+})
