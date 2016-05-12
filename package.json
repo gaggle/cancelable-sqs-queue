@@ -5,6 +5,10 @@
   "main": "index.js",
   "author": "Jon Lauridsen <mail@jonlauridsen.com>",
   "license": "MIT",
+  "bin": {
+    "csq-server": "./bin/server",
+    "csq-worker": "./bin/worker"
+  },
   "scripts": {
     "test": "istanbul --include-all-sources cover _mocha --dir .coverage -- -R spec",
     "server": "bin/server",
