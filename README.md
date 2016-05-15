@@ -65,10 +65,17 @@ and if the job is canceled it'll throw a special exception
 that informs the system to not process further.
 Read about the [Server](#server) to learn how to cancel.
 
-Note that `cancelCheck` is a Promise,
+Note that `cancelCheck` is a Promise (all the helper functions are),
 Javascript is asynchronous
 and if your pipeline is complicated enough to warrant canceling
 I think it should be too :).
+
+### Rich Progress Updates
+
+At relevant steps you can update the job's data, by calling `updateJob`.
+* `this.updateJob({fabulator_progress:5, fabulator_total: 10}`
+
+You can push any data you want. Certain fields will be ignored, such as `canceled`, timestamps, etc.
 
 ## Server
 The server has a simple JSON REST api to facilitate interaction with the jobs.
