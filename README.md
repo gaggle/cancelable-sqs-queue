@@ -1,3 +1,13 @@
+<style>
+table:nth-of-type(1) {
+    display:table;
+    width:100%;
+}
+table:nth-of-type(1) th:nth-of-type(2) {
+    width:10%;
+}
+</style>
+
 # cancelable-sqs-queue
 Super simple cancelable distributed queue, based on Amazon SQS.
 
@@ -63,11 +73,87 @@ and it comes with the helper method `this.cancelCheck()`.
 Run this at steps in your processing where it makes sense to cancel from,
 and if the job is canceled it'll throw a special exception
 that informs the system to not process further.
+Read about the [Server](#server) to learn how to cancel.
 
 Note that `cancelCheck` is a Promise,
 Javascript is asynchronous
 and if your pipeline is complicated enough to warrant canceling
 I think it should be too :).
+
+## Server
+The server has a simple JSON REST api to facilitate interaction with the jobs.
+
+* **Create new job**
+
+    POST /jobs
+
+Request
+
+    {"some":"value"}
+
+* **Get all jobs**
+
+    GET /jobs
+
+Response:
+
+    {
+        "_links": {
+            "self": {
+                "href": "/jobs"
+            }
+        },
+        "_embedded": {
+            "jobs": [{
+              "_links": {
+                  "self": {
+                      "href": "/jobs/foo"
+                  }
+              },
+              "MessageId": "foo",
+              "some": "value",
+          }]
+        },
+        "count": 1
+    }    
+
+
+* **Get a job**
+
+    GET /job/:MessageId
+
+Response:
+
+    {
+        "_links": {
+            "self": {
+                "href": "/jobs/foo"
+            }
+        },
+        "MessageId": "foo",
+        "some": "value"
+    }
+
+* **Update a job**
+
+    PUT /job/:MessageId
+    
+Request:
+
+    {"canceled": "true"}
+    
+Response:
+
+    {
+        "_links": {
+            "self": {
+                "href": "/jobs/foo"
+            }
+        },
+        "MessageId": "foo",
+        "canceled": "true",
+        "some": "value"
+    }
 
 ## Prerequisities
 You need to have set up an [Amazon Simple Queue][sqs].
