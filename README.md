@@ -1,13 +1,3 @@
-<style>
-table:nth-of-type(1) {
-    display:table;
-    width:100%;
-}
-table:nth-of-type(1) th:nth-of-type(2) {
-    width:10%;
-}
-</style>
-
 # cancelable-sqs-queue
 Super simple cancelable distributed queue, based on Amazon SQS.
 
@@ -85,15 +75,17 @@ The server has a simple JSON REST api to facilitate interaction with the jobs.
 
 * **Create new job**
 
-    POST /jobs
+    `POST /jobs`
 
-Request
+Request:
 
     {"some":"value"}
 
+---
+
 * **Get all jobs**
 
-    GET /jobs
+    `GET /jobs`
 
 Response:
 
@@ -117,10 +109,11 @@ Response:
         "count": 1
     }    
 
+---
 
 * **Get a job**
 
-    GET /job/:MessageId
+    `GET /job/:MessageId`
 
 Response:
 
@@ -134,9 +127,11 @@ Response:
         "some": "value"
     }
 
+---
+
 * **Update a job**
 
-    PUT /job/:MessageId
+    `PUT /job/:MessageId`
     
 Request:
 
