@@ -63,11 +63,99 @@ and it comes with the helper method `this.cancelCheck()`.
 Run this at steps in your processing where it makes sense to cancel from,
 and if the job is canceled it'll throw a special exception
 that informs the system to not process further.
+Read about the [Server](#server) to learn how to cancel.
 
-Note that `cancelCheck` is a Promise,
+Note that `cancelCheck` is a Promise (all the helper functions are),
 Javascript is asynchronous
 and if your pipeline is complicated enough to warrant canceling
 I think it should be too :).
+
+### Rich Progress Updates
+
+At relevant steps you can update the job's data, by calling `updateJob`.
+* `this.updateJob({fabulator_progress:5, fabulator_total: 10}`
+
+You can push any data you want. Certain fields will be ignored, such as `canceled`, timestamps, etc.
+
+## Server
+The server has a simple JSON REST api to facilitate interaction with the jobs.
+
+* **Create new job**
+
+    `POST /jobs`
+
+Request:
+
+    {"some":"value"}
+
+---
+
+* **Get all jobs**
+
+    `GET /jobs`
+
+Response:
+
+    {
+        "_links": {
+            "self": {
+                "href": "/jobs"
+            }
+        },
+        "_embedded": {
+            "jobs": [{
+              "_links": {
+                  "self": {
+                      "href": "/jobs/foo"
+                  }
+              },
+              "MessageId": "foo",
+              "some": "value",
+          }]
+        },
+        "count": 1
+    }    
+
+---
+
+* **Get a job**
+
+    `GET /job/:MessageId`
+
+Response:
+
+    {
+        "_links": {
+            "self": {
+                "href": "/jobs/foo"
+            }
+        },
+        "MessageId": "foo",
+        "some": "value"
+    }
+
+---
+
+* **Update a job**
+
+    `PUT /job/:MessageId`
+    
+Request:
+
+    {"canceled": "true"}
+    
+Response:
+
+    {
+        "_links": {
+            "self": {
+                "href": "/jobs/foo"
+            }
+        },
+        "MessageId": "foo",
+        "canceled": "true",
+        "some": "value"
+    }
 
 ## Prerequisities
 You need to have set up an [Amazon Simple Queue][sqs].
